@@ -16,8 +16,7 @@ class secure:
         gtk.main_quit()
         
 
-    def encrypt(self, widget, *data):
-        f_name = self.entry.get_text()
+    def encrypt(self, data):
         result = array.array('i', [0]) * 2
         value = array.array('i', [0]) * 2
 
@@ -32,10 +31,14 @@ class secure:
         print  "Frist:: ", self.assign(result[0])
         print  "Second:: ", self.assign(result[1])
         
+        output = self.assign(result[0]) + self.assign(result[1])
+        #f_name = 'encrypted' + self.entry.get_text()
+        enc_file = open("encrypted.txt", 'w+')
+        enc_file.write(str(output))
+        enc_file.close()
         return result
 
-    def decrypt(self, widget, *data):
-        f_name = self.entry.get_text()
+    def decrypt(self, data):
         result = array.array('i', [0]) * 2
         value = array.array('i', [0]) * 2
 
@@ -43,21 +46,26 @@ class secure:
         value[1] = self.assign(data[1])
 
         key = self.key_store('d')
-        print key
 
         result[0] = (value[0] * key[0][0] + value[1] * key[0][1]) % 41
         result[1] = (value[0] * key[1][0] + value[1] * key[1][1]) % 41
         
         print  "Frist:: ", self.assign(result[0])
         print  "Second:: ", self.assign(result[1])
+
+        output = self.assign(result[0]) + self.assign(result[1])
+        #f_name = 'encrypted' + self.entry.get_text()
+        dec_file = open("decrypted.txt", 'w+')
+        dec_file.write(str(output))
+        dec_file.close()
         
         return result
 
     def assign(self, data):
         alpha = " abcdefghijklmnopqrstuvwxyz!,.?0123456789"
         number = 0
-        print data
         if type(data) == str:
+            data = data.lower()
             return alpha.index(data)
 
         elif type(data) == int:
@@ -76,21 +84,14 @@ class secure:
                                 gtk.STOCK_OPEN, gtk.RESPONSE_OK))
         filechooser.set_default_response(gtk.RESPONSE_OK)
 
-        # filter = gtk.FileFilter()
-        # filter.set_name("All files")
-        # filter.add_pattern("*")
-        # filechooser.add_filter(filter)
+        filter = gtk.FileFilter()
+        filter.set_name("All files")
+        filter.add_pattern("*")
+        filechooser.add_filter(filter)
 
         file_type = gtk.FileFilter()
         file_type.set_name("TXT")
-        # file_type.add_mime_type("image/png")
-        # file_type.add_mime_type("image/jpeg")
-        # file_type.add_mime_type("image/gif")
         file_type.add_pattern("*.txt")
-        # file_type.add_pattern("*.jpg")
-        # file_type.add_pattern("*.gif")
-        # file_type.add_pattern("*.tif")
-        # file_type.add_pattern("*.xpm")
         filechooser.add_filter(file_type)
 
         response = filechooser.run()
@@ -112,8 +113,12 @@ class secure:
         #print e_key[0][1]
 
 
-    def msg_relay(self, widget, *data):
-        pass
+    def msg_relay(self, widget, data):
+        msg = file(self.entry.get_text()).read()
+        if data == 'e':
+            self.encrypt(msg)
+        elif data == 'd':
+            self.decrypt(msg)
 
     def __init__(self):
         #self.f_name = ""
@@ -137,8 +142,8 @@ class secure:
         self.hbox1 = gtk.HBox(gtk.FALSE, 5)
         self.hbox2 = gtk.HBox(gtk.FALSE, 5)
         
-        self.button0.connect("clicked", self.decrypt, 'b', 's')
-        self.button1.connect("clicked", self.encrypt, "m", "e")
+        self.button0.connect("clicked", self.msg_relay, 'd')
+        self.button1.connect("clicked", self.msg_relay, 'e')
         self.button2.connect("clicked", self.select_file)
 
         self.hbox1.pack_start(self.entry, gtk.FALSE, gtk.FALSE, 0)
