@@ -1,0 +1,1 @@
+Class adapters can be implemented in languages supporting multiple inheritance.
