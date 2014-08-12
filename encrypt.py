@@ -16,63 +16,6 @@ class secure:
         gtk.main_quit()
         
 
-    def encrypt(self, data):
-        result = array.array('i', [0]) * 2
-        value = array.array('i', [0]) * 2
-
-        value[0] = self.assign(data[0])
-        value[1] = self.assign(data[1])
-        
-        key = self.key_store('e')
-        
-        result[0] = (value[0] * key[0][0] + value[1] * key[0][1]) % 41
-        result[1] = (value[0] * key[1][0] + value[1] * key[1][1]) % 41
-        
-        print  "Frist:: ", self.assign(result[0])
-        print  "Second:: ", self.assign(result[1])
-        
-        output = self.assign(result[0]) + self.assign(result[1])
-        #f_name = 'encrypted' + self.entry.get_text()
-        enc_file = open("encrypted.txt", 'w+')
-        enc_file.write(str(output))
-        enc_file.close()
-        return result
-
-    def decrypt(self, data):
-        result = array.array('i', [0]) * 2
-        value = array.array('i', [0]) * 2
-
-        value[0] = self.assign(data[0])
-        value[1] = self.assign(data[1])
-
-        key = self.key_store('d')
-
-        result[0] = (value[0] * key[0][0] + value[1] * key[0][1]) % 41
-        result[1] = (value[0] * key[1][0] + value[1] * key[1][1]) % 41
-        
-        print  "Frist:: ", self.assign(result[0])
-        print  "Second:: ", self.assign(result[1])
-
-        output = self.assign(result[0]) + self.assign(result[1])
-        #f_name = 'encrypted' + self.entry.get_text()
-        dec_file = open("decrypted.txt", 'w+')
-        dec_file.write(str(output))
-        dec_file.close()
-        
-        return result
-
-    def assign(self, data):
-        alpha = " abcdefghijklmnopqrstuvwxyz!,.?0123456789"
-        number = 0
-        if type(data) == str:
-            data = data.lower()
-            return alpha.index(data)
-
-        elif type(data) == int:
-            while(number != data):
-                number = number + 1
-            return alpha[number]
-
 
     def select_file(self, widget):
         # input_file = sys.argv[1]
@@ -105,20 +48,102 @@ class secure:
         # print self.f_name
 
 
+
+    def encrypt(self, *data):
+        result = array.array('i', [0]) * 4
+        value = array.array('i', [0]) * 4
+
+        value[0] = self.assign(data[0])
+        value[1] = self.assign(data[1])
+        value[2] = self.assign(data[2])
+        value[3] = self.assign(data[3])
+        
+        key = self.key_store('e')
+        
+        result[0] = (value[0] * key[0][0] + value[1] * key[0][1] + value[2] * key[0][2] + value[3] * key[0][3]) % 41
+        result[1] = (value[0] * key[1][0] + value[1] * key[1][1] + value[2] * key[1][2] + value[3] * key[1][3]) % 41
+        result[2] = (value[0] * key[2][0] + value[1] * key[2][1] + value[2] * key[2][2] + value[3] * key[2][3]) % 41
+        result[3] = (value[0] * key[3][0] + value[1] * key[3][1] + value[2] * key[3][2] + value[3] * key[3][3]) % 41
+        
+        print  "Frist:: ", self.assign(result[0])
+        print  "Second:: ", self.assign(result[1])
+        print  "Third:: ", self.assign(result[2])
+        print  "Fourth:: ", self.assign(result[3])
+        
+        output = self.assign(result[0]) + self.assign(result[1]) + self.assign(result[2]) + self.assign(result[3])
+        return output
+
+    def decrypt(self, *data):
+        result = array.array('i', [0]) * 4
+        value = array.array('i', [0]) * 4
+
+        value[0] = self.assign(data[0])
+        value[1] = self.assign(data[1])
+        value[2] = self.assign(data[2])
+        value[3] = self.assign(data[3])
+        
+        key = self.key_store('d')
+
+        result[0] = (value[0] * key[0][0] + value[1] * key[0][1] + value[2] * key[0][2] + value[3] * key[0][3]) % 41
+        result[1] = (value[0] * key[1][0] + value[1] * key[1][1] + value[2] * key[1][2] + value[3] * key[1][3]) % 41
+        result[2] = (value[0] * key[2][0] + value[1] * key[2][1] + value[2] * key[2][2] + value[3] * key[2][3]) % 41
+        result[3] = (value[0] * key[3][0] + value[1] * key[3][1] + value[2] * key[3][2] + value[3] * key[3][3]) % 41
+        
+        print  "Frist:: ", self.assign(result[0])
+        print  "Second:: ", self.assign(result[1])
+        print  "Third:: ", self.assign(result[2])
+        print  "Fourth:: ", self.assign(result[3])
+        
+        output = self.assign(result[0]) + self.assign(result[1]) + self.assign(result[2]) + self.assign(result[3])
+        return output
+
+    def assign(self, data):
+        alpha = " abcdefghijklmnopqrstuvwxyz!,.?0123456789"
+        number = 0
+        if type(data) == str:
+            data = data.lower()
+            return alpha.index(data)
+
+        elif type(data) == int:
+            while(number != data):
+                number = number + 1
+            return alpha[number]
+
+
+
     def key_store(self, data):
         if data == 'e':
-            return [[3, -2], [-1, 1]]
+            # return [[3, -2], [-1, 1]]
+            # return [[0, 11, 15], [7, 0, 1], [4, 19, 0]]
+            return [[19, 18, 29, 0],
+                    [16, 18, 5, 13],
+                    [18, 1, 10, 10],
+                    [15, 19, 8, 9]]
         elif data == 'd':
-            return [[1, 2], [1, 3]]
-        #print e_key[0][1]
+            # return [[1, 2], [1, 3]]
+            # return [[22, 39, 11], [4, 22, 23], [10, 3, 5]]
+            return [[11, 31, 27, 30],
+                    [16, 18, 33, 33],
+                    [14, 18, 0, 15],
+                    [22, 31, 22, 22]]
 
 
     def msg_relay(self, widget, data):
         msg = file(self.entry.get_text()).read()
-        if data == 'e':
-            self.encrypt(msg)
-        elif data == 'd':
-            self.decrypt(msg)
+        sets = (len(msg)-1) % 4
+        if sets != 0:
+            msg = msg + " "*(4-sets)
+        output = ""
+        for i in range(0, len(msg)-1, 4):
+            if data == 'e':
+                output = output + self.encrypt(msg[i], msg[i+1], msg[i+2], msg[i+3])
+                f_name = open("encrypted.txt", 'w+')
+            elif data == 'd':
+                output = output + self.decrypt(msg[i], msg[i+1], msg[i+2], msg[i+3])
+                f_name = open("decrypted.txt", 'w+')
+        
+        f_name.write(str(output))
+        f_name.close()
 
     def __init__(self):
         #self.f_name = ""
@@ -135,7 +160,7 @@ class secure:
         self.button1 = gtk.Button("Encrypt")
         self.button2 = gtk.Button("Browse")
         self.entry = gtk.Entry()
-        self.entry.set_text("...")
+        self.entry.set_text("/home/wannamit/iVoIP/encrypt/some.txt")
         #self.browse = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
 
         self.vbox = gtk.VBox(gtk.FALSE, 10)
